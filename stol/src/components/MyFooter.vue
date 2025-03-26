@@ -37,7 +37,7 @@
         </div>
 
         <div class="container copyright text-center mt-4">
-        <p>© <strong class="px-1 sitename">БГУ</strong> 2025</p>      
+        <p>© <strong class="px-1 sitename"><slot></slot></strong> </p>      
         </div>
     </footer>
 </template>

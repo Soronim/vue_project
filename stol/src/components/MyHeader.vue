@@ -11,9 +11,10 @@
 
         <nav id="navmenu" class="navmenu">
             <ul>
-            <li><a href="#hero" class="active">Главная<br></a></li>
-            <li><a href="#about">О нас</a></li>
-            <li><a href="#menu">Меню</a></li>                    
+            <li v-for="(item,index) in menuItems" :key="index">
+                <router-link :to="{path:item.link}">{{ item.title }}</router-link>
+            </li>
+                             
             
             <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
                 <ul>
@@ -45,6 +46,15 @@
 
 <script>
 export default{
-    name:"MyHeader"
+    name:"MyHeader",
+    data(){
+        return{
+            menuItems:[
+                {'link':'/','title':'Главная'},
+                {'link':'/about','title':'О нас'},
+                {'link':'#','title':'Меню'},
+            ]
+        }
+    }
 }
 </script>
