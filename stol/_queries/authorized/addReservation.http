@@ -1,0 +1,5 @@
+PUT https://webcomp.bsu.ru/api/finals25/reservation/authorized/add HTTP/1.1
+content-type: application/json
+Authorization: Bearer <Token>
+
+{"email":"superorc@bsu.ru","phone":"421665","guests":20,"reservation_date":"2025-04-01 11:10:00"}
