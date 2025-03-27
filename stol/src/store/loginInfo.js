@@ -5,17 +5,25 @@ export default {
     
     state() {
         return {
-            isLogged: localStorage.getItem('is-logged') === 'true',
-            token: localStorage.getItem('my-token') || ''
+            isLogged: localStorage.getItem('is-logged'),
+            token: localStorage.getItem('my-token')
         }
     },
     getters: {
-        getLogged: state => state.isLogged,
-        getToken: state => state.token
+        getLogged(state){
+            let logged=true
+            if(state.isLogged=="false"||!state.isLogged){
+                logged=false
+            }
+            return logged;
+        },
+        getToken(state){
+            return state.token
+        },
     },
     mutations: {
         SET_LOGGED(state, payload) {
-            state.isLogged = payload.isLogged;
+            state.isLogged = payload
             state.token = payload.token || '';
             
             if (payload.isLogged) {
@@ -49,7 +57,7 @@ export default {
                         isLogged: true,
                         token: response.data
                     });
-                    resolve(response.data); // Возвращаем токен
+                    resolve(response.data); 
                 })
                 .catch(error => {
                     commit("SET_LOGGED", {

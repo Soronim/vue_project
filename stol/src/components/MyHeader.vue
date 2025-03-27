@@ -3,7 +3,6 @@
         <div class="container position-relative d-flex align-items-center justify-content-between">
 
             <a href="index.html" class="logo d-flex align-items-center me-auto me-xl-0">
-                <!-- Uncomment the line below if you also wish to use an image logo -->
                 <img src="/img/logo.png" alt="logo">
                 <h1 class="sitename">БХУ</h1>
                 <span>.</span>
@@ -14,7 +13,6 @@
                     <li v-for="(item, index) in menuItems" :key="index">
                         <router-link :to="{ path: item.link }">{{ item.title }}</router-link>
                     </li>
-
 
                     <li class="dropdown"><a href="#"><span>Dropdown</span> <i
                                 class="bi bi-chevron-down toggle-dropdown"></i></a>
@@ -36,13 +34,20 @@
                         </ul>
                     </li>
                     <li><a href="#contact">Contact</a></li>
+                    
+                    <!-- Добавленная кнопка личного кабинета -->
+                    <li v-if="is_logged">
+                        <router-link :to="profileLink" class="profile-link">
+                            <i class="bi bi-person-circle"></i> Личный кабинет
+                        </router-link>
+                    </li>
                 </ul>
                 <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
             </nav>
 
             <div class="text-end">
-                <button type="button" class="btn-getstarted" @click="loginButtonHandler()">
-                    {{ is_logged ? 'Выйти' : 'Войти' }}
+                <button type="button" class="btn-getstarted" :class="is_logged?'btn-danger':'btn-primary'" @click="loginButtonHandler()">
+                    {{is_logged?'Выйти':'Войти'}}
                 </button>
             </div>
 
@@ -64,7 +69,13 @@ export default {
     },
     computed: {
         is_logged() {
-            return this.$store.getters.getLogged
+            return this.$store.getters.getLogged // Используем геттер вместо прямого доступа к состоянию
+        },
+        profileLink() {
+            return this.$store.getters.isModerator ? '/moderator' : '/profile'
+        },
+        profileText() {
+            return this.$store.getters.isModerator ? 'Панель модератора' : 'Личный кабинет'
         }
     },
     methods: {
@@ -80,3 +91,15 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+.profile-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.profile-link i {
+    font-size: 1.2rem;
+}
+</style>

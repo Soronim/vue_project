@@ -7,6 +7,9 @@ import LoginPage from '@/pages/LoginPage.vue';
 import AdminCabinet from '../pages/admin/AdminCabinet.vue';
 import UserCabinet from '../pages/user/UserCabinet.vue';
 import store from '../store/index'
+import UserComments from '../pages/user/UserComments.vue';
+import UserBids from '../pages/user/UserBids.vue';
+import UserReservations from '../pages/user/UserReservations.vue';
 
 export default VueRouter.createRouter({
     history: VueRouter.createWebHashHistory(),
@@ -43,39 +46,52 @@ export default VueRouter.createRouter({
             path: '/admin',
             name: 'adminLayout',
             component: MyLayout,
-            beforeEnter:(to,from,next)=>{
-                if(!store.getters.getLogged){
-                    next({name:'loginPage'})
-                }
-                else{
-                    next()
+            beforeEnter: (to, from, next) => {
+                if (!store.getters['loginInfo/getLogged']) {
+                next({ name: 'loginPage' });
+                } else {
+                next();
                 }
             },
             children: [
                 {
-                    path: '',
-                    name: 'adminCabinet',
-                    component: AdminCabinet
-                },
+                path: '',
+                name: 'adminCabinet',
+                component: AdminCabinet
+                }
             ]
-        },
-        {
+            },
+            {
             path: '/user',
             name: 'userLayout',
             component: MyLayout,
-            beforeEnter:(to,from,next)=>{
-                if(!store.getters.getLogged){
-                    next({name:'loginPage'})
-                }
-                else{
-                    next()
+            beforeEnter: (to, from, next) => {
+                if (!store.getters['loginInfo/getLogged']) {
+                next({ name: 'loginPage' });
+                } else {
+                next();
                 }
             },
             children: [
                 {
-                    path: '',
-                    name: 'userCabinet',
-                    component: UserCabinet
+                path: '',
+                name: 'userCabinet',
+                component: UserCabinet
+                },
+                {
+                path: '/userComments',
+                name: 'userComments',
+                component: UserComments
+                },
+                {
+                path: '/userBids',
+                name: 'userBids',
+                component: UserBids
+                },
+                {
+                path: '/userReservations',
+                name: 'userReservations',
+                component: UserReservations
                 },
             ]
         }

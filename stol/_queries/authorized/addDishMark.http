@@ -1,4 +1,5 @@
 PUT https://webcomp.bsu.ru/api/finals25/dishes/addmark HTTP/1.1
-content-type: application/json
-Authorization: Bearer <Token>
-{"mark":1,"dish_id":15}
+Content-Type: application/json
+Authorization: Bearer 4916|qNUhm5EufTHcLRcpXvT8Kmn0iIPJ1VggxEGFRc6Z
+
+{"mark":1,"dish_id":10}

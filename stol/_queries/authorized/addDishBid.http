@@ -1,5 +1,5 @@
 PUT https://webcomp.bsu.ru/api/finals25/dishes/addbid HTTP/1.1
 content-type: application/json
-Authorization: Bearer <Token>
+Authorization: Bearer 4916|qNUhm5EufTHcLRcpXvT8Kmn0iIPJ1VggxEGFRc6Z
 
-{"bid":2550,"dish_id":15}
+{"bid":10,"dish_id":10}
