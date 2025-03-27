@@ -62,7 +62,7 @@ export default {
             ]
         }
     },
-    compited: {
+    computed: {
         is_logged() {
             return this.$store.getters.getLogged
         }

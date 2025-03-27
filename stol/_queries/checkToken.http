@@ -1,0 +1,3 @@
+GET https://webcomp.bsu.ru/sanctum/check HTTP/1.1
+Accept: application/json
+Authorization: Bearer 4691|XH4Lr7id5A6WQlZaKs3Yzxhj3NMCCYDpDwg53a6D

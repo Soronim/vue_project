@@ -1,0 +1,5 @@
+PUT https://webcomp.bsu.ru/api/finals25/comments/add HTTP/1.1
+content-type: application/json
+Authorization: Bearer <Token>
+
+{"comment":"Отличное блюдо","dish_id":1}

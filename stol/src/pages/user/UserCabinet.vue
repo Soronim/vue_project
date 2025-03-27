@@ -1,88 +1,65 @@
 <template>
-    <div class="admin-cabinet">
-      <h1>Личный кабинет модератора</h1>
+    <div class="user-cabinet">
+      <h1>Личный кабинет</h1>
       
       <nav class="tabs">
         <button 
           @click="activeTab = 'comments'"
           :class="{ active: activeTab === 'comments' }"
         >
-          Комментарии
+          Мои комментарии
         </button>
         <button 
           @click="activeTab = 'bids'"
           :class="{ active: activeTab === 'bids' }"
         >
-          Ставки
+          Мои ставки
         </button>
         <button 
           @click="activeTab = 'reservations'"
           :class="{ active: activeTab === 'reservations' }"
         >
-          Заявки
+          Мои заявки
         </button>
       </nav>
       
       <div class="tab-content">
         <!-- Комментарии -->
         <div v-if="activeTab === 'comments'" class="comments-section">
-          <h2>Комментарии</h2>
-          <div class="filters">
-            <select v-model="commentsFilter" class="filter-select">
-              <option value="all">Все комментарии</option>
-              <option value="visible">Только видимые</option>
-              <option value="hidden">Только скрытые</option>
-            </select>
-          </div>
+          <h2>Мои комментарии</h2>
           <div v-if="commentsLoading">Загрузка...</div>
-          <div v-else-if="filteredComments.length === 0">Нет комментариев</div>
+          <div v-else-if="comments.length === 0">Нет комментариев</div>
           <div v-else class="comments-list">
             <div 
-              v-for="comment in filteredComments" 
+              v-for="comment in comments" 
               :key="comment.id"
               class="comment"
-              :class="{ 'hidden': comment.status === 0 }"
+              :class="{ 'published': comment.status === 1, 'hidden': comment.status === 0 }"
             >
               <div class="comment-header">
-                <span class="user">{{ comment.user_name }}</span>
-                <span class="dish">{{ comment.dish_title }}</span>
+                <span class="dish-name">{{ comment.dish_title }}</span>
                 <span class="date">{{ formatDate(comment.created_at) }}</span>
               </div>
               <p class="comment-text">{{ comment.comment }}</p>
-              <div class="comment-actions">
-                <button 
-                  @click="toggleCommentStatus(comment)"
-                  class="toggle-btn"
-                >
-                  {{ comment.status === 1 ? 'Скрыть' : 'Показать' }}
-                </button>
-                <button 
-                  @click="deleteComment(comment.id)"
-                  class="delete-btn"
-                >
-                  Удалить
-                </button>
-              </div>
+              <button 
+                v-if="comment.status === 0"
+                @click="deleteComment(comment.id)"
+                class="delete-btn"
+              >
+                Удалить
+              </button>
             </div>
           </div>
         </div>
         
         <!-- Ставки -->
         <div v-if="activeTab === 'bids'" class="bids-section">
-          <h2>Ставки</h2>
-          <div class="filters">
-            <select v-model="bidsFilter" class="filter-select">
-              <option value="all">Все ставки</option>
-              <option value="new">Новые</option>
-              <option value="confirmed">Подтвержденные</option>
-              <option value="rejected">Отклоненные</option>
-            </select>
-          </div>
+          <h2>Мои ставки</h2>
           <div v-if="bidsLoading">Загрузка...</div>
-          <div v-else-if="filteredBids.length === 0">Нет ставок</div>
+          <div v-else-if="bids.length === 0">Нет ставок</div>
           <div v-else class="bids-list">
             <div 
-              v-for="bid in filteredBids" 
+              v-for="bid in bids" 
               :key="bid.id"
               class="bid"
               :class="{ 
@@ -92,28 +69,12 @@
               }"
             >
               <div class="bid-header">
-                <span class="user">{{ bid.user_name }}</span>
-                <span class="dish">{{ bid.dish_title }}</span>
+                <span class="dish-name">{{ bid.dish_title }}</span>
                 <span class="status">{{ getBidStatusText(bid.status) }}</span>
               </div>
               <div class="bid-details">
-                <span>Текущая цена: {{ bid.dish_price }} ₽</span>
-                <span>Ставка: {{ bid.bid }} ₽</span>
+                <span>Цена: {{ bid.bid }} ₽</span>
                 <span class="date">{{ formatDate(bid.created_at) }}</span>
-              </div>
-              <div v-if="bid.status === 0" class="bid-actions">
-                <button 
-                  @click="changeBidStatus(bid.id, 1)"
-                  class="confirm-btn"
-                >
-                  Подтвердить
-                </button>
-                <button 
-                  @click="changeBidStatus(bid.id, 2)"
-                  class="reject-btn"
-                >
-                  Отклонить
-                </button>
               </div>
             </div>
           </div>
@@ -121,7 +82,7 @@
         
         <!-- Заявки -->
         <div v-if="activeTab === 'reservations'" class="reservations-section">
-          <h2>Заявки на столики</h2>
+          <h2>Мои заявки</h2>
           <div v-if="reservationsLoading">Загрузка...</div>
           <div v-else-if="reservations.length === 0">Нет заявок</div>
           <div v-else class="reservations-list">
@@ -136,28 +97,17 @@
               }"
             >
               <div class="reservation-header">
-                <span class="user">{{ reservation.user_info || reservation.email }}</span>
+                <span class="date">{{ formatDate(reservation.reservation_date) }}</span>
                 <span class="status">{{ getReservationStatusText(reservation.status) }}</span>
               </div>
               <div class="reservation-details">
-                <span>Дата: {{ formatDate(reservation.reservation_date) }}</span>
                 <span>Гостей: {{ reservation.guests }}</span>
-                <span>Телефон: {{ reservation.phone }}</span>
-              </div>
-              <div v-if="reservation.status === 0 || reservation.status === 1" class="reservation-actions">
                 <button 
-                  @click="changeReservationStatus(reservation.id, 1)"
-                  class="confirm-btn"
-                  :disabled="reservation.status === 1"
+                  v-if="canCancelReservation(reservation)"
+                  @click="cancelReservation(reservation.id)"
+                  class="cancel-btn"
                 >
-                  Подтвердить
-                </button>
-                <button 
-                  @click="changeReservationStatus(reservation.id, 2)"
-                  class="reject-btn"
-                  :disabled="reservation.status === 2"
-                >
-                  Отклонить
+                  Отменить
                 </button>
               </div>
             </div>
@@ -173,37 +123,16 @@
   import axios from 'axios';
   
   export default {
-    name: 'AdminCabinet',
+    name: 'UserCabinet',
     data() {
       return {
         activeTab: 'comments',
         comments: [],
         commentsLoading: false,
-        commentsFilter: 'all',
         bids: [],
         bidsLoading: false,
-        bidsFilter: 'all',
         reservations: [],
         reservationsLoading: false
-      }
-    },
-    computed: {
-      filteredComments() {
-        return this.comments.filter(comment => {
-          if (this.commentsFilter === 'all') return true;
-          if (this.commentsFilter === 'visible') return comment.status === 1;
-          if (this.commentsFilter === 'hidden') return comment.status === 0;
-          return true;
-        });
-      },
-      filteredBids() {
-        return this.bids.filter(bid => {
-          if (this.bidsFilter === 'all') return true;
-          if (this.bidsFilter === 'new') return bid.status === 0;
-          if (this.bidsFilter === 'confirmed') return bid.status === 1;
-          if (this.bidsFilter === 'rejected') return bid.status === 2;
-          return true;
-        });
       }
     },
     methods: {
@@ -272,18 +201,14 @@
           default: return 'Неизвестно';
         }
       },
-      async toggleCommentStatus(comment) {
-        try {
-          await axios.get(`https://webcomp.bsu.ru/api/finals25/changecommentstatus/${comment.id}`, {
-            headers: {
-              'Authorization': `Bearer ${this.$store.getters['loginInfo/getToken']}`
-            }
-          });
-          comment.status = comment.status === 1 ? 0 : 1;
-        } catch (error) {
-          console.error('Error toggling comment status:', error);
-          alert('Не удалось изменить статус комментария');
-        }
+      canCancelReservation(reservation) {
+        if (reservation.status !== 0 && reservation.status !== 1) return false;
+        
+        const reservationDate = new Date(reservation.reservation_date);
+        const now = new Date();
+        const hoursDiff = (reservationDate - now) / (1000 * 60 * 60);
+        
+        return hoursDiff > 5;
       },
       async deleteComment(commentId) {
         if (confirm('Удалить комментарий?')) {
@@ -300,36 +225,22 @@
           }
         }
       },
-      async changeBidStatus(bidId, status) {
-        try {
-          await axios.put('https://webcomp.bsu.ru/api/finals25/dishes/changebidstatus', 
-            { bid_id: bidId, status: status },
-            {
-              headers: {
-                'Authorization': `Bearer ${this.$store.getters['loginInfo/getToken']}`
+      async cancelReservation(reservationId) {
+        if (confirm('Отменить заявку?')) {
+          try {
+            await axios.put('https://webcomp.bsu.ru/api/finals25/reservation/authorized/setstatus', 
+              { reservation_id: reservationId, status: 3 },
+              {
+                headers: {
+                  'Authorization': `Bearer ${this.$store.getters['loginInfo/getToken']}`
+                }
               }
-            }
-          );
-          await this.fetchBids();
-        } catch (error) {
-          console.error('Error changing bid status:', error);
-          alert('Не удалось изменить статус ставки');
-        }
-      },
-      async changeReservationStatus(reservationId, status) {
-        try {
-          await axios.put('https://webcomp.bsu.ru/api/finals25/reservation/authorized/setstatus', 
-            { reservation_id: reservationId, status: status },
-            {
-              headers: {
-                'Authorization': `Bearer ${this.$store.getters['loginInfo/getToken']}`
-              }
-            }
-          );
-          await this.fetchReservations();
-        } catch (error) {
-          console.error('Error changing reservation status:', error);
-          alert('Не удалось изменить статус заявки');
+            );
+            await this.fetchReservations();
+          } catch (error) {
+            console.error('Error canceling reservation:', error);
+            alert('Не удалось отменить заявку');
+          }
         }
       },
       logout() {
@@ -346,8 +257,8 @@
   </script>
   
   <style scoped>
-  .admin-cabinet {
-    max-width: 1000px;
+  .user-cabinet {
+    max-width: 800px;
     margin: 0 auto;
     padding: 20px;
   }
@@ -371,16 +282,6 @@
     font-weight: bold;
   }
   
-  .filters {
-    margin-bottom: 15px;
-  }
-  
-  .filter-select {
-    padding: 5px 10px;
-    border-radius: 4px;
-    border: 1px solid #ddd;
-  }
-  
   .comments-list, .bids-list, .reservations-list {
     display: flex;
     flex-direction: column;
@@ -391,6 +292,16 @@
     padding: 15px;
     border-radius: 5px;
     border: 1px solid #ddd;
+  }
+  
+  .comment-header, .bid-header, .reservation-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .comment.published {
+    background-color: #f0f8ff;
   }
   
   .comment.hidden {
@@ -422,53 +333,19 @@
     background-color: #fffff0;
   }
   
-  .comment-header, .bid-header, .reservation-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-  }
-  
-  .comment-actions, .bid-actions, .reservation-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-  }
-  
-  .toggle-btn, .delete-btn, .confirm-btn, .reject-btn {
+  .delete-btn, .cancel-btn {
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
     padding: 5px 10px;
     border-radius: 3px;
     cursor: pointer;
-    border: none;
-  }
-  
-  .toggle-btn {
-    background-color: #ffc107;
-    color: black;
-  }
-  
-  .delete-btn {
-    background-color: #dc3545;
-    color: white;
-  }
-  
-  .confirm-btn {
-    background-color: #28a745;
-    color: white;
-  }
-  
-  .reject-btn {
-    background-color: #dc3545;
-    color: white;
-  }
-  
-  .confirm-btn:disabled, .reject-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+    margin-top: 10px;
   }
   
   .logout-btn {
     margin-top: 20px;
-    background-color: #dc3545;
+    background-color: #ff6b6b;
     color: white;
     border: none;
     padding: 10px 20px;

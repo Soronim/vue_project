@@ -1,0 +1,5 @@
+PUT https://webcomp.bsu.ru/api/finals25/dishes/changebidstatus HTTP/1.1
+content-type: application/json
+Authorization: Bearer <Token>
+
+{"bid_id":7,"status":2}

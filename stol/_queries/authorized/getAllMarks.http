@@ -1,0 +1,3 @@
+GET https://webcomp.bsu.ru/api/finals25/dishes/allmarks HTTP/1.1
+content-type: application/json
+Authorization: Bearer <Token>

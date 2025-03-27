@@ -1,0 +1,3 @@
+GET https://webcomp.bsu.ru/api/userData HTTP/1.1
+content-type: application/json
+Authorization: Bearer 4847|UbO5fgbYpTO5kcIsB8gPj7zyPCNoliTnAHrz5HAn
