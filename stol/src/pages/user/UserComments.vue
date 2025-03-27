@@ -32,8 +32,8 @@
             Удалить
           </button>
           <router-link 
-            v-if="comment.dish_id"
-            :to="`/dish/${comment.dish_id}`"
+            v-if="comment.id"
+            :to="`/dish/${comment.id}`"
             class="view-dish-btn"
           >
             Посмотреть блюдо
@@ -93,7 +93,7 @@ export default {
     async deleteComment(commentId) {
       if (confirm('Удалить комментарий?')) {
         try {
-          await this.$axios.get(`/deletecomment/${commentId}`, {
+          await this.$axios.get(`https://webcomp.bsu.ru/api/finals25/deletecomment/${commentId}`, {
             headers: { 'Authorization': `Bearer ${this.$store.getters['loginInfo/getToken']}` }
           });
           this.comments = this.comments.filter(c => c.id !== commentId);

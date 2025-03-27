@@ -10,6 +10,10 @@ import store from '../store/index'
 import UserComments from '../pages/user/UserComments.vue';
 import UserBids from '../pages/user/UserBids.vue';
 import UserReservations from '../pages/user/UserReservations.vue';
+import AdminComments from '../pages/admin/AdminComments.vue';
+import AdminBids from '../pages/admin/AdminBids.vue';
+import AdminReservations from '../pages/admin/AdminReservations.vue';
+
 
 export default VueRouter.createRouter({
     history: VueRouter.createWebHashHistory(),
@@ -55,10 +59,25 @@ export default VueRouter.createRouter({
             },
             children: [
                 {
-                path: '',
-                name: 'adminCabinet',
-                component: AdminCabinet
-                }
+                    path: '',
+                    name: 'adminCabinet',
+                    component: AdminCabinet
+                },
+                {
+                    path: '/adminComments',
+                    name: 'adminComments',
+                    component: AdminComments
+                },
+                {
+                    path: '/adminBids',
+                    name: 'adminBids',
+                    component: AdminBids
+                },
+                {
+                    path: '/adminReservations',
+                    name: 'adminReservations',
+                    component: AdminReservations
+                },
             ]
             },
             {
@@ -74,24 +93,24 @@ export default VueRouter.createRouter({
             },
             children: [
                 {
-                path: '',
-                name: 'userCabinet',
-                component: UserCabinet
+                    path: '',
+                    name: 'userCabinet',
+                    component: UserCabinet
                 },
                 {
-                path: '/userComments',
-                name: 'userComments',
-                component: UserComments
+                    path: '/userComments',
+                    name: 'userComments',
+                    component: UserComments
                 },
                 {
-                path: '/userBids',
-                name: 'userBids',
-                component: UserBids
+                    path: '/userBids',
+                    name: 'userBids',
+                    component: UserBids
                 },
                 {
-                path: '/userReservations',
-                name: 'userReservations',
-                component: UserReservations
+                    path: '/userReservations',
+                    name: 'userReservations',
+                    component: UserReservations
                 },
             ]
         }

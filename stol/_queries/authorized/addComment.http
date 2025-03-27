@@ -2,4 +2,4 @@ PUT https://webcomp.bsu.ru/api/finals25/comments/add HTTP/1.1
 content-type: application/json
 Authorization: Bearer 4916|qNUhm5EufTHcLRcpXvT8Kmn0iIPJ1VggxEGFRc6Z
 
-{"comment":"Отлиичное блюдо","dish_id":10}
+{"comment":"Нормально","dish_id":10}
